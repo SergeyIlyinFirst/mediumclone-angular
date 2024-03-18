@@ -1,10 +1,21 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Params} from "@angular/router";
 
 @Component({
-  selector: 'mc-your-feed',
-  templateUrl: './your-feed.component.html',
-  styleUrl: './your-feed.component.scss'
+  selector: 'mc-tag-feed',
+  templateUrl: './tag-feed.component.html',
+  styleUrl: './tag-feed.component.scss'
 })
-export class YourFeedComponent {
-  apiUrl: string = '/articles/feed'
+export class TagFeedComponent implements OnInit {
+  apiUrl: string
+  tagName: string
+
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit(): void {
+    this.route.params.subscribe((params: Params) => {
+      this.tagName = params['slug']
+      this.apiUrl = `/articles?tag=${this.tagName}`
+    })
+  }
 }

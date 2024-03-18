@@ -1,73 +1,64 @@
-import {booleanAttribute, Component, Input, NgZone, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {select, Store} from '@ngrx/store';
-import { getFeedAction } from '../../store/actions/getFeedAction';
-import {Observable, Subscription} from "rxjs";
-import {GetFeedResponseInterface} from "../../types/getFeedResponse.interface";
-import {errorSelector, feedSelector, isLoadingSelector} from "../../store/selectors";
-import { environment } from "src/environments/environment";
-import {ActivatedRoute, Params, Router} from "@angular/router";
-import queryString from "query-string";
+import {combineLatest, map, Observable, Subscription} from "rxjs";
+import {articleSelector, errorSelector, isLoadingSelector} from "../../store/selectors";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ArticleInterface} from "../../../shared/types/article.interface";
+import {currentUserSelector} from "../../../auth/store/selectors";
+import {CurrentUserInterface} from "../../../shared/types/currentUser.interface";
+import {deleteArticleAction} from "../../store/actions/deleteArticle.action";
+import {getArticleAction} from "../../store/actions/getArticle.action";
 
 @Component({
-  selector: 'mc-feed',
-  templateUrl: './feed.component.html',
-  styleUrl: './feed.component.scss'
+  selector: 'mc-article',
+  templateUrl: './article.component.html',
+  styleUrl: './article.component.scss'
 })
-export class FeedComponent implements OnInit, OnDestroy, OnChanges {
-  @Input('apiUrl') apiUrlProps: string
-
+export class ArticleComponent implements OnInit, OnDestroy {
+  slug: string
+  article: ArticleInterface | null
+  articleSubscription: Subscription
   isLoading$: Observable<boolean>
   error$: Observable<string | null>
-  feed$: Observable<GetFeedResponseInterface | null>
-  pageLimit: number
-  baseUrl: string
-  queryParamsSubscription: Subscription
-  currentPage: number
+  isAuthor$: Observable<boolean | null>
 
   constructor(private store: Store, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.pageLimit = environment.pageLimit
     this.initializeValues()
     this.initializeListeners()
+    this.fetchData()
   }
 
   ngOnDestroy(): void {
-    this.queryParamsSubscription.unsubscribe()
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const isApiUrlChanged: boolean = !changes['apiUrlProps'].firstChange
-      && changes['apiUrlProps'].currentValue !== changes['apiUrlProps'].previousValue
-
-    if(isApiUrlChanged) {
-      this.fetchFeed()
-    }
+    this.articleSubscription.unsubscribe()
   }
 
   initializeValues() {
+    this.slug = this.route.snapshot.paramMap.get('slug')!
     this.isLoading$ = this.store.pipe(select(isLoadingSelector))
     this.error$ = this.store.pipe(select(errorSelector))
-    this.feed$ = this.store.pipe(select(feedSelector));
-    this.baseUrl = this.router.url.split('?')[0]
-  }
-
-  fetchFeed() {
-    const offset = this.currentPage * this.pageLimit - this.pageLimit
-    const parsedUrl = queryString.parseUrl(this.apiUrlProps)
-    const stringifiedParams = queryString.stringify({
-      limit: this.pageLimit,
-      offset,
-      ...parsedUrl.query
-    })
-    const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`
-    this.store.dispatch(getFeedAction({url: apiUrlWithParams}))
+    this.isAuthor$ = combineLatest(
+      this.store.pipe(select(articleSelector)),
+      this.store.pipe(select(currentUserSelector))
+    ).pipe(map(([article, currentUser]: [ArticleInterface | null, CurrentUserInterface | null]) =>  {
+      return article && currentUser && article.author.username === currentUser.username
+    }))
   }
 
   initializeListeners() {
-    this.queryParamsSubscription = this.route.queryParams.subscribe((params: Params) => {
-      this.currentPage = Number(params['page'] || '1')
-      this.fetchFeed()
-    })
+    this.articleSubscription = this.store
+      .pipe(select(articleSelector))
+      .subscribe((article: ArticleInterface | null) => {
+        this.article = article
+      })
+  }
+
+  fetchData() {
+    this.store.dispatch(getArticleAction({slug: this.slug}))
+  }
+
+  deleteArticle(): void{
+    this.store.dispatch(deleteArticleAction({slug: this.slug}))
   }
 }

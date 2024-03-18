@@ -1,0 +1,10 @@
+@if (isLoading$ | async) {
+  <mc-loading></mc-loading>
+} @else if(initialValues$ | async) {
+  <mc-article-form
+    [initialValues]="(initialValues$ | async)!"
+    [isSubmitting]="(isSubmitting$ | async)!"
+    [errors]="backendErrors$ | async"
+    (articleSubmit)="onSubmit($event)"
+  ></mc-article-form>
+}

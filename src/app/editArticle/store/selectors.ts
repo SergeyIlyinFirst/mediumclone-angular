@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import {EditArticleStateInterface} from "./store/types/editArticle.interface";
+import {EditArticleStateInterface} from "../types/editArticle.interface";
 
 export const editArticleFeatureSelector = createFeatureSelector<EditArticleStateInterface>('editArticle')
 export const isSubmittingSelector = createSelector(editArticleFeatureSelector, ((createArticleState: EditArticleStateInterface) => createArticleState.isSubmitting))

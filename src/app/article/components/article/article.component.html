@@ -1,39 +1,49 @@
-@if (isLoading$ | async) {
-  <mc-loading></mc-loading>
-} @else if (error$ | async) {
-  <mc-error-message></mc-error-message>
-} @else if (feed$ | async) {
-  <div>
-    @for (article of (feed$ | async)!.articles; let index = $index; track index) {
-      <div class="article-preview">
+<div class="article-page">
+  <div class="banner">
+    @if (article) {
+      <div class="container">
+        <h1>{{article.title}}</h1>
         <div class="article-meta">
           <a [routerLink]="['/profiles', article.author.username]">
-            <img [src]="article.author.image" />
+            <img [ngSrc]="article.author.image" width="32" height="32" />
           </a>
           <div class="info">
             <a [routerLink]="['/profiles', article.author.username]">
-              {{ article.author.username }}
+              {{article.author.username}}
             </a>
             <span class="date">
-            {{ article.createdAt | date:"dd-MM-yyyy hh:mm:ss" }}
-          </span>
+              {{article.createdAt}}
+            </span>
           </div>
-          <div class="pull-xs-right">
-            ADD TO FAVORITES
-          </div>
+          @if (isAuthor$ | async) {
+            <span>
+              <a [routerLink]="['/articles', article.slug, 'edit']" class="btn btn-outline-secondary btn-sm">
+                <i class="ion-edit"></i>
+                Edit article
+              </a>
+              <button class="btn bnt-outline-danger btn-sm" (click)="deleteArticle()">
+                Delete article
+              </button>
+            </span>
+          }
         </div>
-        <a [routerLink]="['/articles', article.slug]" class="preview-link">
-          <h1>{{article.title}}</h1>
-          <p>{{article.description}}</p>
-          <mc-tag-list [tags]="article.tagList"></mc-tag-list>
-        </a>
       </div>
     }
-    <mc-pagination
-      [total]="((feed$ | async)?.articlesCount ?? 1)"
-      [pageLimit]="pageLimit"
-      [url]="baseUrl"
-      [currentPage]="currentPage"
-    ></mc-pagination>
   </div>
-}
+</div>
+<div class="container page">
+  @if (isLoading$ | async) {
+    <mc-loading></mc-loading>
+  } @else if (error$ | async) {
+    <mc-error-message></mc-error-message>
+  } @else {
+    <div class="row article-content">
+      <div class="col-xs-12">
+        <div>
+          <p>{{article!.body}}</p>
+        </div>
+        <mc-tag-list [tags]="article!.tagList"></mc-tag-list>
+      </div>
+    </div>
+  }
+</div>

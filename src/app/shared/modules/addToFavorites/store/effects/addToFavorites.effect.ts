@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, of, switchMap } from "rxjs";
-import {AddToFavoritesService} from "../services/AddToFavorites.service";
+import {AddToFavoritesService} from "../../services/AddToFavorites.service";
 import {
   addToFavoritesAction,
   addToFavoritesFailureAction,
   addToFavoritesSuccessAction
 } from "../actions/addToFavorites.action";
-import {ArticleInterface} from "../../../types/article.interface";
+import {ArticleInterface} from "../../../../types/article.interface";
 
 @Injectable()
 export class AddToFavoritesEffect {

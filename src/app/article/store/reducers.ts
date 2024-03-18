@@ -1,28 +1,31 @@
 import { createReducer, on } from "@ngrx/store";
-import { FeedStateInterface } from "../types/feedState.interface";
-import { getFeedAction, getFeedFailureAction, getFeedSuccessAction } from "./actions/getFeedAction";
+import { ArticleStateInterface } from "../types/articleState.interface";
+import {
+  getArticleAction,
+  getArticleFailureAction, getArticleSuccessAction,
+} from "./actions/getArticle.action";
 import {routerNavigatedAction} from "@ngrx/router-store";
 
-const initialState : FeedStateInterface = {
+const initialState : ArticleStateInterface = {
     isLoading: false,
     error: null,
     data: null
 }
 
-export const feedReducer = createReducer(
+export const articleReducer = createReducer(
     initialState,
-    on(getFeedAction, (state): FeedStateInterface => ({
+    on(getArticleAction, (state): ArticleStateInterface => ({
         ...state,
         isLoading: true
     })),
-    on(getFeedSuccessAction, (state, action): FeedStateInterface => ({
+    on(getArticleSuccessAction, (state, action): ArticleStateInterface => ({
         ...state,
         isLoading: false,
-        data: action.feed
+        data: action.article
     })),
-    on(getFeedFailureAction, (state): FeedStateInterface => ({
+    on(getArticleFailureAction, (state): ArticleStateInterface => ({
         ...state,
         isLoading: false
     })),
-    on(routerNavigatedAction, (): FeedStateInterface => initialState)
+    on(routerNavigatedAction, (): ArticleStateInterface => initialState)
 )

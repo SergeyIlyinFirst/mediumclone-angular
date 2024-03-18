@@ -1,18 +1,18 @@
 import {CommonModule} from "@angular/common";
 import { NgModule } from "@angular/core";
-import { BannerComponent } from './components/banner/banner.component';
+import { ErrorMessageComponent } from './components/errorMessage/error-message.component';
 
 @NgModule({
   imports: [
     CommonModule
   ],
   exports: [
-    BannerComponent
+    ErrorMessageComponent
   ],
   declarations: [
-    BannerComponent
+    ErrorMessageComponent
   ],
   providers: [
   ]
 })
-export class BannerModule {}
+export class ErrorMessageModule {}

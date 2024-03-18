@@ -1,25 +1,25 @@
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { catchError, map, of, switchMap } from "rxjs";
-import { ArticleService } from "../../../shared/services/article.service";
-import { getArticleAction, getFeedFailureAction, getFeedSuccessAction } from "../actions/getArticleAction";
-import { GetArticleResponseInterface } from "../../../shared/types/getArticleResponse.interface";
+import { ArticleService as SharedArticleService } from "../../../shared/services/article.service";
+import { getArticleAction, getArticleFailureAction, getArticleSuccessAction } from "../actions/getArticle.action";
+import {ArticleInterface} from "../../../shared/types/article.interface";
 
 @Injectable()
-export class GetFeedEffect {
+export class GetArticleEffect {
     constructor(
         private actions$: Actions,
-        private feedService: ArticleService) {}
+        private sharedArticleService: SharedArticleService) {}
 
-    getFeed$ = createEffect(() => this.actions$.pipe(
+    getArticle$ = createEffect(() => this.actions$.pipe(
         ofType(getArticleAction),
-        switchMap(({url}) => {
-            return this.feedService.getFeed(url).pipe(
-                map((feed: GetArticleResponseInterface) => {
-                    return getFeedSuccessAction({ feed })
+        switchMap(({slug}) => {
+            return this.sharedArticleService.getArticle(slug).pipe(
+                map((article: ArticleInterface) => {
+                    return getArticleSuccessAction({ article })
                 }),
                 catchError(() => {
-                    return of(getFeedFailureAction())
+                    return of(getArticleFailureAction())
                 })
             )
         })

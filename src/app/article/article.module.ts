@@ -1,34 +1,43 @@
-import {CommonModule} from "@angular/common";
+import {CommonModule, NgOptimizedImage} from "@angular/common";
 import { NgModule } from "@angular/core";
-import { FeedComponent } from './components/feed/feed.component';
+import { ArticleComponent } from './components/article/article.component';
 import { EffectsModule } from "@ngrx/effects";
-import { GetFeedEffect } from "./store/effects/getFeed.effect";
+import { GetArticleEffect } from "./store/effects/getArticle.effect";
 import { StoreModule } from "@ngrx/store";
-import { feedReducer } from "./store/reducers";
-import { FeedService } from "./services/feed.service";
-import {RouterLink} from "@angular/router";
-import {ErrorMessageModule} from "../errorMessage/error-message.module";
-import {LoadingModule} from "../loading/loading.module";
-import {PaginationModule} from "../pagination/pagination.module";
-import {TagListModule} from "../tagList/tagList.module";
+import { ArticleService as SharedArticleService } from "../shared/services/article.service";
+import {RouterLink, RouterModule, Routes} from "@angular/router";
+import {ErrorMessageModule} from "../shared/modules/errorMessage/error-message.module";
+import {LoadingModule} from "../shared/modules/loading/loading.module";
+import {articleReducer} from "./store/reducers";
+import {TagListModule} from "../shared/modules/tagList/tagList.module";
+import {ArticleService} from "./services/article.service";
+import {DeleteArticleEffect} from "./store/effects/deleteArticle.effect";
+
+const routes: Routes = [
+  {
+    path: 'articles/:slug',
+    component: ArticleComponent
+  }
+]
 
 @NgModule({
-    imports: [
-        CommonModule,
-        EffectsModule.forFeature([GetFeedEffect]),
-        StoreModule.forFeature('feed', feedReducer),
-        RouterLink,
-        ErrorMessageModule,
-        LoadingModule,
-        PaginationModule,
-        TagListModule
-    ],
-    exports: [FeedComponent],
+  imports: [
+    CommonModule,
+    EffectsModule.forFeature([GetArticleEffect, DeleteArticleEffect]),
+    StoreModule.forFeature('article', articleReducer),
+    RouterLink,
+    ErrorMessageModule,
+    LoadingModule,
+    RouterModule.forChild(routes),
+    NgOptimizedImage,
+    TagListModule
+  ],
     declarations: [
-        FeedComponent
+        ArticleComponent
     ],
     providers: [
-        FeedService
+        SharedArticleService,
+        ArticleService
     ]
 })
-export class FeedModule {}
+export class ArticleModule {}

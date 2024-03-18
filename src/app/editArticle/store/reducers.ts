@@ -1,11 +1,11 @@
 import { createReducer, on } from "@ngrx/store";
-import {EditArticleStateInterface} from "./store/types/editArticle.interface";
+import {EditArticleStateInterface} from "../types/editArticle.interface";
 import {
   updateArticleAction,
   updateArticleFailureAction,
   updateArticleSuccessAction
-} from "./store/actions/updateArticle.action";
-import {getArticleAction, getArticleFailureAction, getArticleSuccessAction} from "./store/actions/getArticle.action";
+} from "./actions/updateArticle.action";
+import {getArticleAction, getArticleFailureAction, getArticleSuccessAction} from "./actions/getArticle.action";
 
 const initialState: EditArticleStateInterface = {
   isSubmitting: false,

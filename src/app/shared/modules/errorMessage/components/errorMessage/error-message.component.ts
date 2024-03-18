@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'mc-banner',
-  templateUrl: './banner.component.html',
-  styleUrl: './banner.component.scss'
+  selector: 'mc-error-message',
+  templateUrl: './error-message.component.html',
+  styleUrl: './error-message.component.scss'
 })
-export class BannerComponent {
-
+export class ErrorMessageComponent {
+  @Input('message') messageProps: string = 'Something went wrong'
 }

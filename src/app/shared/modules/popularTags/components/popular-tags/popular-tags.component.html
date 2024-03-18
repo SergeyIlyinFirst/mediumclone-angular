@@ -1,0 +1,16 @@
+@if (isLoading$ | async) {
+  <mc-loading></mc-loading>
+} @else if (error$ | async) {
+  <mc-error-message></mc-error-message>
+} @else if (popularTags$ | async) {
+  <div class="sidebar">
+    <p>Popular tags</p>
+    <div class="tag-list">
+      @for (popularTag of (popularTags$ | async); let index = $index; track index) {
+        <a [routerLink]="['/tags', popularTag]" class="tag-default tag-pill">
+          {{popularTag}}
+        </a>
+      }
+    </div>
+  </div>
+}
